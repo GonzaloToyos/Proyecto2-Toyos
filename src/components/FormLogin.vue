@@ -24,7 +24,8 @@
       <v-btn color="error" class="mr-4" @click="reset"> Reset </v-btn>
 
       <p>
-        ¿No tienes cuenta? <span><a href="">Regístrate</a></span>
+        ¿No tienes cuenta?
+        <span><router-link to="/registro">Registrate</router-link></span>
       </p>
     </div>
   </v-form>
@@ -33,8 +34,13 @@
 
   
 <script>
+import axios from "axios";
+
+const url =
+  "https://trabajofinal-909d8-default-rtdb.firebaseio.com/usuarios.json";
+
 export default {
-  name: "FormRegistro",
+  name: "FormLogin",
   props: {
     msg: String,
   },
@@ -51,15 +57,53 @@ export default {
       (v) =>
         (v && v.length >= 6) || "La contraseña debe tener 6 caracteres o más",
     ],
+    usuariosExistentesAxios: [],
+    usuariosExistentes: [],
+    passwords: []
   }),
 
   methods: {
     validate() {
       this.$refs.form.validate();
+
+      const found = this.usuariosExistentes.includes(this.email);
+      const index = this.usuariosExistentes.indexOf(this.email);
+      const passActual = this.passwords[index];
+
+      console.log(found, index, this.passwords[index]);
+
+      if (this.$refs.form.validate()) {
+        if (index != -1 ) {
+          if (passActual == this.password){
+            this.$router.push("/")
+          } else {
+            alert("Contraseña incorrecta");
+          }
+        } else {
+          alert("Correo incorrecto");
+        }
+      } else {
+        console.log("NO validao");
+      }
     },
     reset() {
       this.$refs.form.reset();
     },
+  },
+
+  async created() {
+    await axios
+      .get(url)
+      .then(
+        (response) =>
+          (this.usuariosExistentesAxios = Object.values(response.data))
+      );
+
+    for (let usuario of this.usuariosExistentesAxios) {
+      this.usuariosExistentes.push(usuario.correo);
+      this.passwords.push(usuario.pass)
+    }
+    console.log(this.usuariosExistentes);
   },
 };
 </script>
