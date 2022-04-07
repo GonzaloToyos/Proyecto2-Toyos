@@ -35,6 +35,7 @@
   
 <script>
 import axios from "axios";
+import { mapState, mapMutations } from "vuex";
 
 const url =
   "https://trabajofinal-909d8-default-rtdb.firebaseio.com/usuarios.json";
@@ -59,23 +60,36 @@ export default {
     ],
     usuariosExistentesAxios: [],
     usuariosExistentes: [],
-    passwords: []
+    passwords: [],
+    admin: [],
+    nombres: [],
   }),
 
   methods: {
     validate() {
       this.$refs.form.validate();
 
-      const found = this.usuariosExistentes.includes(this.email);
       const index = this.usuariosExistentes.indexOf(this.email);
-      const passActual = this.passwords[index];
-
-      console.log(found, index, this.passwords[index]);
+      const usuarioActual = {
+        passActual: this.passwords[index],
+        nombreActual: this.nombres[index],
+        adminActual: this.admin[index],
+        correoActual: this.email,
+      };
 
       if (this.$refs.form.validate()) {
-        if (index != -1 ) {
-          if (passActual == this.password){
-            this.$router.push("/")
+        if (index != -1) {
+          if (usuarioActual.passActual == this.password) {
+            /*this.usuario.nombre = usuarioActual.nombreActual;
+            this.usuario.correo = this.email;
+            this.usuario.admin = usuarioActual.adminActual;*/
+            this.$store.commit("asignarUsuario", usuarioActual);
+            sessionStorage.setItem("user", JSON.stringify(usuarioActual));
+            if (usuarioActual.adminActual === true) {
+              this.$router.push("/admin");
+            } else {
+              this.$router.push("/");
+            }
           } else {
             alert("Contraseña incorrecta");
           }
@@ -92,6 +106,8 @@ export default {
   },
 
   async created() {
+    sessionStorage.removeItem("user");
+    this.$store.commit("borrarUsuario");
     await axios
       .get(url)
       .then(
@@ -101,9 +117,19 @@ export default {
 
     for (let usuario of this.usuariosExistentesAxios) {
       this.usuariosExistentes.push(usuario.correo);
-      this.passwords.push(usuario.pass)
+      this.passwords.push(usuario.pass);
+      this.admin.push(usuario.admin);
+      this.nombres.push(usuario.nombre);
     }
+
     console.log(this.usuariosExistentes);
+    console.log(this.nombres);
+    console.log(this.admin);
+  },
+
+  computed: {
+    ...mapState(["usuario"]),
+    ...mapMutations(["asignarUsuario"]),
   },
 };
 </script>

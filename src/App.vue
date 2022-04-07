@@ -6,9 +6,15 @@
 
         <v-spacer></v-spacer>
         <!-- el @click reemplaza al router-link -->
-        <v-btn @click="$router.push('login')">Login</v-btn>
+
+        <v-btn v-if="usuarios !== ''">{{ usuarios.nombreActual }}</v-btn>
+        <v-btn v-else @click="$router.push('login'), cerrarSesion()"
+          >Login</v-btn
+        >
+
         <v-btn @click="$router.push('registro')">Registro</v-btn>
         <v-btn @click="$router.push('/')">Home</v-btn>
+        <v-btn @click="cerrarSesion()">Cerrar</v-btn>
       </v-toolbar>
       <router-view />
     </v-app>
@@ -16,11 +22,35 @@
 </template>
 
 <script>
-//import axios from "axios";
+import { mapState, mapActions } from "vuex";
 
 export default {
   name: "App",
-  data: () => ({}),
+  data: () => ({
+    user: "",
+  }),
+  computed: {
+    ...mapState(["usuario", "usuarios"]),
+  },
+  methods: {
+    cerrarSesion() {
+      sessionStorage.removeItem("user");
+      this.user = "";
+      this.eliminarUsers();
+      this.$router.push("/login");
+    },
+    ...mapActions(["obtenerUsers", "eliminarUsers"]),
+    nombreUsuario(usuario) {
+      console.log(typeof usuario)
+      return usuario;
+    }
+  },
+  async beforeUpdate() {
+    this.obtenerUsers();
+  },
+  async created() {
+    this.obtenerUsers();
+  },
 };
 </script>
 

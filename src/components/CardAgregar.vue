@@ -60,7 +60,7 @@
                   :disabled="!valid"
                   color="success"
                   class="mr-4"
-                  @click="if (validate) {dialog.value = false}"               
+                  @click="validate(); if (validate) {dialog.value = false}"          
                 >
                   Agregar
                 </v-btn>
@@ -78,7 +78,6 @@
 
 <script>
 import axios from "axios";
-
 export default {
   name: "ProductCardAdd",
   props: {
@@ -140,7 +139,6 @@ export default {
 .cursor {
   cursor: pointer;
 }
-
 form {
   display: flex;
   flex-direction: column;

@@ -1,12 +1,7 @@
 <template>
   <div class="container">
     <form-login />
-    <v-alert
-      border="right"
-      color="blue-grey"
-      dark
-      class="mt-5"
-    >
+    <v-alert border="right" color="blue-grey" dark class="mt-5">
       Usuario sugerido: prueba@gmail.com || Contraseña: 123456
     </v-alert>
   </div>

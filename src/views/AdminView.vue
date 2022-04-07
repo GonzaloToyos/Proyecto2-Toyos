@@ -2,88 +2,49 @@
   <v-app>
     <v-main>
       <div class="cards-container">
-        <product-card
+        <product-card-add />
+        <product-card-admin
           v-for="(comida, i) of comidas"
           :key="i"
           :title="comidas[i]"
           :id="id[i]"
         />
       </div>
-      <br /><br /><br />
-      <div class="container-carrito">
-        <v-btn
-          @click="isActiveCarrito = !isActiveCarrito"
-          class="mx-2"
-          fab
-          dark
-          small
-          color="primary"
-        >
-          <v-icon dark>
-            {{ isActiveCarrito ? "mdi-cart-outline" : "mdi-cart-off" }}
-          </v-icon>
-        </v-btn>
-        <carrito-comidas
-          :productos="carrito"
-          :show="isActiveCarrito"
-        ></carrito-comidas>
-      </div>
+      <br /><br /><br /><br />
+      <product-card-pedido
+        v-for="(pedido, i) of pedidos"
+        :key="i"
+        :pedidos="pedido"
+        :id="idPedidos[i]"
+      />
     </v-main>
   </v-app>
 </template>
 
 <script>
-import ProductCard from "@/components/Card.vue";
-import CarritoComidas from "@/components/Carrito.vue";
+import ProductCardAdd from "@/components/CardAgregar.vue";
+import ProductCardAdmin from "@/components/CardAdmin.vue";
+import ProductCardPedido from "@/components/CardPedido.vue";
 import axios from "axios";
-import { mapState } from 'vuex'
+import { mapState } from "vuex";
 
 export default {
   name: "App",
 
   components: {
-    ProductCard,
-    CarritoComidas,
+    ProductCardAdd,
+    ProductCardAdmin,
+    ProductCardPedido,
   },
 
   data: () => ({
     user: "",
-    isActiveCarrito: false,
     comidasCards: [],
-    carrito: [
-      {
-        producto: "Pescado",
-        precio: 750,
-        cantidad: 0,
-        id: 1,
-      },
-      {
-        producto: "Pescado",
-        precio: 750,
-        cantidad: 0,
-        id: 2,
-      },
-      {
-        producto: "Pescado",
-        precio: 750,
-        cantidad: 0,
-        id: 3,
-      },
-      {
-        producto: "Pescado",
-        precio: 750,
-        cantidad: 0,
-        id: 4,
-      },
-      {
-        producto: "Pescado",
-        precio: 750,
-        cantidad: 0,
-        id: 5,
-      },
-    ],
     comidas: [],
-    id: []
+    id: [],
+    pedidosCards: [],
+    pedidos: [],
+    idPedidos: [],
   }),
 
   async created() {
@@ -101,6 +62,15 @@ export default {
 
     this.comidas = Object.values(this.comidasCards);
     this.id = Object.keys(this.comidasCards);
+
+    url = "https://trabajofinal-909d8-default-rtdb.firebaseio.com/Pedidos.json";
+
+    await axios
+      .get(url)
+      .then((response) => (this.pedidosCards = response.data));
+
+    this.pedidos = Object.values(this.pedidosCards);
+    this.idPedidos = Object.keys(this.pedidosCards);
   },
 
   beforeCreate() {
@@ -112,9 +82,7 @@ export default {
   },
 
   computed: {
-    ...mapState([
-      'usuario',
-    ])
+    ...mapState(["usuario"]),
   },
 };
 </script>
