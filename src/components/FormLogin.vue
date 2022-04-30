@@ -35,7 +35,6 @@
   
 <script>
 import axios from "axios";
-import { mapState, mapMutations } from "vuex";
 
 const url =
   "https://trabajofinal-909d8-default-rtdb.firebaseio.com/usuarios.json";
@@ -80,11 +79,7 @@ export default {
       if (this.$refs.form.validate()) {
         if (index != -1) {
           if (usuarioActual.passActual == this.password) {
-            /*this.usuario.nombre = usuarioActual.nombreActual;
-            this.usuario.correo = this.email;
-            this.usuario.admin = usuarioActual.adminActual;*/
-            this.$store.commit("asignarUsuario", usuarioActual);
-            sessionStorage.setItem("user", JSON.stringify(usuarioActual));
+            this.$store.commit("createUser", usuarioActual);
             if (usuarioActual.adminActual === true) {
               this.$router.push("/admin");
             } else {
@@ -106,8 +101,6 @@ export default {
   },
 
   async created() {
-    sessionStorage.removeItem("user");
-    this.$store.commit("borrarUsuario");
     await axios
       .get(url)
       .then(
@@ -127,10 +120,6 @@ export default {
     console.log(this.admin);
   },
 
-  computed: {
-    ...mapState(["usuario"]),
-    ...mapMutations(["asignarUsuario"]),
-  },
 };
 </script>
 
@@ -138,5 +127,13 @@ export default {
 .btn-container {
   display: flex;
   justify-content: space-between;
+}
+
+
+@media screen and (max-width: 600px) {
+  .btn-container {
+    flex-direction: column;
+    gap: 10px;
+  }
 }
 </style>

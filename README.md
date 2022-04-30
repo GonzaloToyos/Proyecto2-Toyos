@@ -9,7 +9,7 @@ Cada card de comida se puede seleccionar apretando en "más info".
 Desde ahí se la puede editar y eliminar. Esto solo lo puede hacer el admin aunque todavía no hace diferencia de usuarios.
 Cuando se edita o agregar una comida hay que recargar la pagina para ver los cambios implementados, cuando se elimina no es necesario.
 
-# primera-entrega
+# entrega-final
 
 ## Project setup
 ```

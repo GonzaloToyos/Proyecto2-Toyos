@@ -1,5 +1,5 @@
 <template>
-  <form-registro class="container" />
+  <FormRegistro class="container" />
 </template>
 
 
@@ -11,7 +11,7 @@ export default {
   name: "App",
 
   components: {
-    FormRegistro,
+    FormRegistro
   },
 };
 </script>
@@ -24,10 +24,11 @@ export default {
 
 .container {
   max-width: 80%;
-  margin: auto;
+  margin: 5vh auto;
   padding: 15px;
   border: 1px solid black;
-  border-radius: 5px;
+  border-radius: 5px;  
+  background-color: white;
 }
 
 .v-application--wrap {

@@ -1,6 +1,12 @@
+<!-- Esta Card la ven los usuarios comunes cuando agregan productos al carrito -->
 <template>
-  <v-card class="mx-auto mt-5" max-width="344" :class="mostrar(show)">
-    <v-img :src="title.img" height="200px"></v-img>
+  <v-card class="mx-3 mt-5 card" max-width="344">
+    <v-img
+      @click.stop="dialog = true"
+      class="imagen-card"
+      :src="title.img"
+      height="200px"
+    ></v-img>
 
     <v-card-title>
       {{ title.titulo }}
@@ -11,21 +17,25 @@
     </v-card-title>
 
     <v-col cols="auto">
-      <v-dialog transition="dialog-top-transition" max-width="600">
+      <v-dialog
+        transition="dialog-top-transition"
+        v-model="dialog"
+        max-width="600"
+      >
         <template v-slot:activator="{ on, attrs }">
           <v-row class="d-flex align-end">
             <v-col>
-              <v-btn color="warning" v-bind="attrs" v-on="on">Más info</v-btn>
+              <v-btn color="#ff9c20" v-bind="attrs" v-on="on">Más info</v-btn>
             </v-col>
             <v-text-field
-              v-model="comidaEnvio.cantidad"
+              v-model="comidaEnviada.agregado"
               class="mt-0 pt-0"
               type="number"
               style="width: 60px"
               :min="1"
             ></v-text-field>
             <v-col class="d-flex justify-end">
-              <v-btn color="success" @click="agregarComida(comidaEnvio)"
+              <v-btn color="#5fbb63" @click="addToCart()"
                 >Agregar</v-btn
               >
             </v-col>
@@ -47,19 +57,22 @@
             <v-card-text>
               <div class="body-1 mt-3">{{ title.desc }}</div>
             </v-card-text>
-            <v-row class="d-flex justify-space-between align-end" style="margin: 0px">
+            <v-row
+              class="d-flex justify-space-between align-end"
+              style="margin: 0px"
+            >
               <v-col>
                 <v-card-actions>
                   <v-btn
-                    color="success"
+                    color="#5fbb63"
                     class="mx-auto"
-                    @click="agregarComida(comidaEnvio), dialog.value = false"
+                    @click="addToCart(), (dialog.value = false)"
                     >Agregar</v-btn
                   >
                 </v-card-actions>
               </v-col>
               <v-text-field
-                v-model="comidaEnvio.cantidad"
+                v-model="comidaEnviada.agregado"
                 class="mt-0 pt-0"
                 type="number"
                 style="width: 60px"
@@ -67,7 +80,10 @@
               ></v-text-field>
               <v-col>
                 <v-card-actions>
-                  <v-btn color="warning" class="mx-auto" @click="dialog.value = false"
+                  <v-btn
+                    color="#ff9c20"
+                    class="mx-auto"
+                    @click="dialog.value = false"
                     >Cerrar</v-btn
                   >
                 </v-card-actions>
@@ -81,8 +97,6 @@
 </template>
 
 <script>
-import { mapState, mapMutations } from "vuex";
-
 export default {
   name: "ProductCard",
   props: {
@@ -93,11 +107,10 @@ export default {
     return {
       show: false,
       dialog: false,
-      cant: 1,
-      comidaEnvio: {
+      comidaEnviada: {
         titulo: this.title.titulo,
         precio: this.title.precio,
-        cantidad: 1,
+        agregado: 1
       },
     };
   },
@@ -107,23 +120,42 @@ export default {
     },
   },
   methods: {
-    mostrar(i) {
-      return i ? "show" : "s";
+    addToCart() {
+      this.$store.commit("addToCart", this.comidaEnviada);
     },
-    ...mapMutations(["agregarComida"]),
-  },
-  computed: {
-    ...mapState(["carrito"]),
   },
 };
 </script>
 
 <style scoped>
-.show {
-  display: none;
-}
 .container {
   margin: auto;
   max-width: 800px;
+}
+
+.card {
+  border-radius: 10px !important;
+  box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px,
+    rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px,
+    rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px !important;
+}
+
+.card:hover {
+  transform: scale(1.05);
+  transition: all 0.2s ease-in-out;
+}
+
+.imagen-card {
+  cursor: pointer;
+}
+
+button:hover {
+  transform: scale(1.1);
+  box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px,
+    rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px,
+    rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px !important;
+}
+button {
+  border: 2px solid black !important;
 }
 </style>

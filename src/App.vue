@@ -1,55 +1,63 @@
 <template>
   <div id="app">
     <v-app>
-      <v-toolbar>
+      <v-toolbar color="black" class="hola flex-grow-0" dark>
         <v-toolbar-title>Trabajo Final</v-toolbar-title>
 
         <v-spacer></v-spacer>
         <!-- el @click reemplaza al router-link -->
+          <v-btn v-if="isUserOnline">{{ user.nombreFake }}</v-btn>
+          <v-btn v-else @click="$router.push('login')">Login</v-btn>
 
-        <v-btn v-if="usuarios !== ''">{{ usuarios.nombreActual }}</v-btn>
-        <v-btn v-else @click="$router.push('login'), cerrarSesion()"
-          >Login</v-btn
-        >
+          <!-- botones para admin o usuario comun -->
+          <div v-if="isUserOnline">
+            <div v-if="user.adminFake == true">
+              <v-btn @click="$router.push('/admin')">HOME</v-btn>
+              <v-btn @click="$router.push('/pedidos')">pedidos</v-btn>
+            </div>
 
-        <v-btn @click="$router.push('registro')">Registro</v-btn>
-        <v-btn @click="$router.push('/')">Home</v-btn>
-        <v-btn @click="cerrarSesion()">Cerrar</v-btn>
+            <div v-else>
+              <v-btn @click="$router.push('/')">HOME</v-btn>
+              <v-btn @click="$router.push('/carrito')">CARRITO</v-btn>
+            </div>
+          </div>
+          <v-btn @click="$router.push('registro')">Registro</v-btn>
+          <v-btn @click="deleteCart(), endUserSession()">Salir</v-btn>
       </v-toolbar>
       <router-view />
+      <FooterComponent />
     </v-app>
   </div>
 </template>
 
 <script>
-import { mapState, mapActions } from "vuex";
-
+import FooterComponent from "@/components/Footer.vue";
 export default {
   name: "App",
-  data: () => ({
-    user: "",
-  }),
+  components: {
+    FooterComponent,
+  },
+  data: () => ({}),
   computed: {
-    ...mapState(["usuario", "usuarios"]),
+    isUserOnline() {
+      return this.$store.state.userFake.online;
+    },
+    user() {
+      return this.$store.state.userFake;
+    },
   },
   methods: {
-    cerrarSesion() {
-      sessionStorage.removeItem("user");
-      this.user = "";
-      this.eliminarUsers();
+    deleteCart() {
+      this.$store.commit("deleteCart");
+    },
+    endUserSession() {
+      this.$store.commit("endUserSession");
       this.$router.push("/login");
     },
-    ...mapActions(["obtenerUsers", "eliminarUsers"]),
-    nombreUsuario(usuario) {
-      console.log(typeof usuario)
-      return usuario;
-    }
   },
-  async beforeUpdate() {
-    this.obtenerUsers();
-  },
-  async created() {
-    this.obtenerUsers();
+  mounted() {
+    this.$store.commit("updateCartFromLocalStorage");
+    this.$store.commit("updateUserFromLocalStorage");
   },
 };
 </script>
@@ -61,8 +69,11 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
+  background-color: rgb(233, 212, 49);
+  min-height: 100vh;
 }
 .v-application--wrap {
   min-height: 0vh !important;
 }
+
 </style>

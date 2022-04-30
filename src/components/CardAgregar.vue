@@ -1,12 +1,13 @@
+<!-- Esta Card sirve para que el admin pueda agregar una nueva comida --> 
 <template>
-  <v-card class="mx-auto mt-5 cursor" max-width="344" style="max-height: 346px">
+  <v-card class="mx-auto mt-5 cursor card" max-width="344" style="max-height: 346px">
     <v-dialog transition="dialog-top-transition" max-width="600">
       <template v-slot:activator="{ on, attrs }">
         <v-col>
           <v-img
             v-bind="attrs"
             v-on="on"
-            src="https://cdn.icon-icons.com/icons2/2550/PNG/512/plus_icon_152556.png"
+            src="@/assets/plus_icon.png"
             height="auto"
             max-width="344"
           ></v-img>
@@ -16,8 +17,7 @@
         <v-card>
           <v-toolbar>
             <v-toolbar-title
-              >Nueva comida. Para ver los cambios refresque la
-              página.</v-toolbar-title
+              >Nueva comida. </v-toolbar-title
             >
             <v-spacer></v-spacer>
           </v-toolbar>
@@ -151,5 +151,13 @@ form input {
 .container {
   margin: auto;
   max-width: 800px;
+}
+.card{
+  border-radius: 10px;
+  box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px !important;
+}
+.card:hover{
+  transition: all 0.2s ease-in-out;
+  transform: scale(1.03);
 }
 </style>

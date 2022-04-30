@@ -1,6 +1,6 @@
 <template>
-  <div class="cart" :class="mostrar(show)">
-    <v-simple-table>
+  <div class="cart">
+    <v-simple-table class="tabla" :class="mostrar(show)">
       <template v-slot:default>
         <thead>
           <tr>
@@ -11,21 +11,31 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(item, i) in carrito" :key="i">
+          <tr v-for="(item, i) in cart" :key="i">
             <td class="text-left">{{ item.titulo }}</td>
             <td class="text-left">
-              {{ (item.precio * item.cantidad) | formatPrecio }}
+              {{ (item.precio * item.quantity) | formatPrecio }}
             </td>
-            <td class="text-center">{{ item.cantidad }}</td>
+            <td class="text-center">{{ item.quantity }}</td>
             <td class="text-center">
               <v-btn
-                @click="eliminarComida(item.titulo)"
+                @click="removeFromCart(item.titulo)"
+                class="mr-2"
                 fab
                 dark
                 x-small
                 color="error"
               >
-                <v-icon dark> mdi-delete </v-icon>
+                <v-icon dark> mdi-minus </v-icon>
+              </v-btn>
+              <v-btn
+                @click="incrementFromCart(item.titulo)"
+                fab
+                dark
+                x-small
+                color="primary"
+              >
+                <v-icon dark> mdi-plus </v-icon>
               </v-btn>
             </td>
           </tr>
@@ -33,16 +43,18 @@
         <tfoot>
           <tr>
             <th class="text-left">Total</th>
-            <th class="text-left">{{ sumaTotal(carrito) | formatPrecio }}</th>
-            <th class="text-center">{{ cantidadTotal(carrito) }}</th>
+            <th class="text-left">{{ precioTotal | formatPrecio }}</th>
+            <th class="text-center">{{ cantidadTotal }}</th>
             <th class="text-center">
+              <!-- Este boton te manda a la vista carrito si estas en Home-->
               <v-btn
-                @click="enviarPedido(carrito)"
+                v-if="$route.name == 'home'"
+                @click="$router.push('/carrito')"
                 dark
                 x-small
                 color="success"
               >
-                Enviar
+                Continuar
               </v-btn>
             </th>
           </tr>
@@ -56,28 +68,27 @@
 .cart {
   width: 400px;
   height: auto;
-  margin: auto;
+  margin: 0 auto;
+}
+.tabla {
   border: 1px solid black !important;
 }
 .show {
   display: none;
+  border: 0px solid black !important;
 }
 
 @media screen and (max-width: 600px) {
   .cart {
-    width: 300px;
+    width: 380px;
   }
 }
 </style>
 
 <script>
-import { mapState, mapMutations, mapActions } from "vuex";
-import axios from "axios";
-
 export default {
   name: "CarritoComidas",
   props: {
-    productos: Array,
     show: Boolean,
   },
   filters: {
@@ -86,40 +97,26 @@ export default {
     },
   },
   methods: {
+    removeFromCart(titulo) {
+      this.$store.commit("removeFromCart", titulo);
+    },
+    incrementFromCart(titulo) {
+      this.$store.commit("incrementFromCart", titulo);
+    },
     mostrar(i) {
       return i ? "s" : "show";
     },
-    ...mapMutations(["eliminarComida"]),
-    ...mapActions(["eliminarCarrito"]),
-    sumaTotal(carro) {
-      let suma = 0;
-      for (let producto of carro) {
-        suma += parseInt(producto.precio) * parseInt(producto.cantidad);
-      }
-      return suma;
-    },
-    cantidadTotal(carro) {
-      let suma = 0;
-      for (let producto of carro) {
-        suma += parseInt(producto.cantidad);
-      }
-      return suma;
-    },
-    async enviarPedido(pedido) {
-      const url =
-        "https://trabajofinal-909d8-default-rtdb.firebaseio.com/Pedidos.json";
-
-      await axios.post(url, {
-        Orden: pedido,
-        Fecha: (new Date).toLocaleDateString('ES-es'),
-        Usuario: this.usuarios
-      });
-
-      this.eliminarCarrito();
-    },
   },
   computed: {
-    ...mapState(["carrito", "usuarios"]),
+    cart() {
+      return this.$store.state.cart;
+    },
+    precioTotal() {
+      return this.$store.getters.precioTotalCarrito;
+    },
+    cantidadTotal() {
+      return this.$store.getters.cantidadTotalCarrito;
+    },
   },
 };
 </script>

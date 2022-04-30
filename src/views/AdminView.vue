@@ -2,21 +2,16 @@
   <v-app>
     <v-main>
       <div class="cards-container">
-        <product-card-add />
-        <product-card-admin
+        <ProductCardAdd />
+        <ProductCardAdmin
+          @update:card="cardUpdate"
           v-for="(comida, i) of comidas"
           :key="i"
           :title="comidas[i]"
           :id="id[i]"
         />
       </div>
-      <br /><br /><br /><br />
-      <product-card-pedido
-        v-for="(pedido, i) of pedidos"
-        :key="i"
-        :pedidos="pedido"
-        :id="idPedidos[i]"
-      />
+      <br /><br />
     </v-main>
   </v-app>
 </template>
@@ -24,9 +19,7 @@
 <script>
 import ProductCardAdd from "@/components/CardAgregar.vue";
 import ProductCardAdmin from "@/components/CardAdmin.vue";
-import ProductCardPedido from "@/components/CardPedido.vue";
 import axios from "axios";
-import { mapState } from "vuex";
 
 export default {
   name: "App",
@@ -34,7 +27,6 @@ export default {
   components: {
     ProductCardAdd,
     ProductCardAdmin,
-    ProductCardPedido,
   },
 
   data: () => ({
@@ -42,47 +34,55 @@ export default {
     comidasCards: [],
     comidas: [],
     id: [],
-    pedidosCards: [],
-    pedidos: [],
-    idPedidos: [],
   }),
+
+  methods: {
+    async cardUpdate() {
+      let url =
+        "https://trabajofinal-909d8-default-rtdb.firebaseio.com/comidas.json";
+
+      await axios
+        .get(url)
+        .then((response) => (this.comidasCards = response.data));
+
+      this.comidas = Object.values(this.comidasCards);
+      this.id = Object.keys(this.comidasCards);
+    },
+  },
 
   async created() {
     let url =
       "https://trabajofinal-909d8-default-rtdb.firebaseio.com/comidas.json";
 
-    //await axios.get(url).then((response) => (this.images = response.data));
-    /*fetch(url)
-      .then((response) => response.json())
-      .then((data) => (this.comidasCards = data))
-      .then((data) => console.log(data));*/
     await axios
       .get(url)
       .then((response) => (this.comidasCards = response.data));
 
     this.comidas = Object.values(this.comidasCards);
     this.id = Object.keys(this.comidasCards);
+  },
 
-    url = "https://trabajofinal-909d8-default-rtdb.firebaseio.com/Pedidos.json";
+  async beforeUpdate() {
+    let url =
+      "https://trabajofinal-909d8-default-rtdb.firebaseio.com/comidas.json";
 
     await axios
       .get(url)
-      .then((response) => (this.pedidosCards = response.data));
+      .then((response) => (this.comidasCards = response.data));
 
-    this.pedidos = Object.values(this.pedidosCards);
-    this.idPedidos = Object.keys(this.pedidosCards);
+    this.comidas = Object.values(this.comidasCards);
+    this.id = Object.keys(this.comidasCards);
   },
 
   beforeCreate() {
-    if (sessionStorage.getItem("user")) {
-      this.user = JSON.parse(sessionStorage.getItem("user"));
-    } else {
+    this.$store.commit("updateUserFromLocalStorage");
+
+    if (
+      !this.$store.state.userFake.online ||
+      !this.$store.state.userFake.adminFake
+    ) {
       this.$router.push("/login");
     }
-  },
-
-  computed: {
-    ...mapState(["usuario"]),
   },
 };
 </script>

@@ -1,6 +1,12 @@
+<!-- Esta card es para que el admin edite o elimine los productos existentes -->
 <template>
-  <v-card class="mx-auto mt-5" max-width="344" :class="mostrar(show)">
-    <v-img :src="title.img" height="200px"></v-img>
+  <v-card class="mx-auto mt-5 card" max-width="344" :class="mostrar(show)">
+    <v-img
+      :src="title.img"
+      @click.stop="dialog = true"
+      class="imagen-card"
+      height="200px"
+    ></v-img>
 
     <v-card-title>
       {{ title.titulo }}
@@ -11,22 +17,31 @@
     </v-card-title>
 
     <v-col cols="auto">
-      <v-dialog transition="dialog-top-transition" max-width="600">
+      <v-dialog
+        v-model="dialog"
+        transition="dialog-top-transition"
+        max-width="600"
+      >
         <template v-slot:activator="{ on, attrs }">
           <v-row class="d-flex">
             <v-col>
               <v-btn
-                color="error"
+                color="#ff3e3e"
                 class="mx-auto"
-                @click="borrarComida(id), (dialog.value = false)"
+                @click="borrarComida(id)"
                 >Eliminar</v-btn
               >
             </v-col>
 
             <v-col>
-                <v-btn color="primary" class="mx-auto" v-bind="attrs" v-on="on">
-                  Editar
-                </v-btn>
+              <v-btn
+                color="rgb(233,212,49)"
+                class="mx-auto"
+                v-bind="attrs"
+                v-on="on"
+              >
+                Editar
+              </v-btn>
             </v-col>
           </v-row>
         </template>
@@ -71,7 +86,7 @@
                       :disabled="!valid"
                       color="success"
                       class="mr-4"
-                      @click="validate(id)"
+                      @click="validate(id), update()"
                     >
                       Editar
                     </v-btn>
@@ -79,11 +94,12 @@
                     <v-btn color="error" class="mr-4" @click="reset">
                       Reset
                     </v-btn>
-                    <v-btn color="error" @click="dialog.value = false">Cerrar</v-btn>
+                    <v-btn color="error" @click="dialog.value = false"
+                      >Cerrar</v-btn
+                    >
                   </div>
                 </v-form>
               </div>
-
             </v-row>
           </v-card>
 
@@ -148,6 +164,9 @@ export default {
     mostrar(i) {
       return i ? "show" : "s";
     },
+    update() {
+      this.$emit("update:card",);
+    },
     //metodos form
     async validate(id) {
       console.log(`${id}`);
@@ -180,5 +199,29 @@ export default {
 .container {
   margin: auto;
   max-width: 800px;
+}
+.card {
+  border-radius: 10px;
+  box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px,
+    rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px,
+    rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px !important;
+}
+.card:hover {
+  transform: scale(1.05);
+  transition: all 0.2s ease-in-out;
+}
+
+.imagen-card {
+  cursor: pointer;
+}
+
+button:hover {
+  transform: scale(1.1);
+  box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px,
+    rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px,
+    rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px !important;
+}
+button {
+  border: 2px solid black !important;
 }
 </style>

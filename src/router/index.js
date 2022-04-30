@@ -28,6 +28,16 @@ const routes = [
     path: '/registro',
     name: 'registro',
     component: () => import(/* webpackChunkName: "about" */ '../views/RegistroFormView.vue')
+  },
+  {
+    path: '/pedidos',
+    name: 'pedidos',
+    component: () => import(/* webpackChunkName: "about" */ '../views/PedidosView.vue')
+  },
+  {
+    path: '/carrito',
+    name: 'carrito',
+    component: () => import(/* webpackChunkName: "about" */ '../views/CartView.vue')
   }
 ]
 
